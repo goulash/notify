@@ -19,5 +19,5 @@ var connection *dbus.Conn
 // Before using notify, it is a good idea (though not necessary) to test
 // if this service is available.
 func ServiceAvailable() bool {
-
+	return true
 }

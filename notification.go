@@ -88,20 +88,20 @@ func (n Notification) SendUrgentMsg(summary, body string, urgency NotificationUr
 }
 
 // Replace replaces the notification with the ID id as it is, and returns the
-// ID and an error if one occured.
-func (n Notification) Replace(id uint32) (id uint32, err error) {
+// new ID and an error if one occured.
+func (n Notification) Replace(id uint32) (newID uint32, err error) {
 	return notify(n.Name, n.Summary, n.Body, n.IconPath, id, nil, n.Urgency.asHint(), n.timeoutInMS())
 }
 
 // ReplaceMsg is identical to notify.ReplaceMsg, except that the rest of the
 // values come from n.
-func (n Notification) ReplaceMsg(id uint32, summary, body string) (id uint32, err error) {
+func (n Notification) ReplaceMsg(id uint32, summary, body string) (newID uint32, err error) {
 	return notify(n.Name, summary, body, n.IconPath, id, nil, n.Urgency.asHint(), n.timeoutInMS())
 }
 
 // ReplaceUrgentMsg is identical to notify.ReplaceUrgentMsg, except that the
 // rest of the values come from n.
-func (n Notification) ReplaceUrgentMsg(id uint32, summary, body string, urgency NotificationUrgency) (id uint32, err error) {
+func (n Notification) ReplaceUrgentMsg(id uint32, summary, body string, urgency NotificationUrgency) (newID uint32, err error) {
 	return notify(n.Name, summary, body, n.IconPath, id, nil, urgency.asHint(), n.timeoutInMS())
 }
 

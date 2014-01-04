@@ -104,19 +104,19 @@ func SendUrgentMsg(summary, body string, urgency NotificationUrgency) (id uint32
 }
 
 // ReplaceMsg replaces the already existing notification with the ID id with
-// summary and body, returning the id and an error if it fails. It takes all
-// other values from the implicit notification object.
+// summary and body, returning the new ID and an error if it fails. It takes
+// all other values from the implicit notification object.
 //
 // In particular, if the notification it is replacing had other properties,
 // such as another urgency, these are also replaced by the defaults in the
 // implicit notification!
-func ReplaceMsg(id uint32, summary, body string) (id uint32, err error) {
+func ReplaceMsg(id uint32, summary, body string) (newID uint32, err error) {
 	return note.ReplaceMsg(id, summary, body)
 }
 
 // ReplaceUrgentMsg replaces the already existing notification with the ID id
-// with summary and body and urgency, returning the id and an error if it
+// with summary and body and urgency, returning the new ID and an error if it
 // fails. It takes all other values from the implicit notification object.
-func ReplaceUrgentMsg(id uint32, summary, body string, urgency NotificationUrgency) (id uint32, err error) {
+func ReplaceUrgentMsg(id uint32, summary, body string, urgency NotificationUrgency) (newID uint32, err error) {
 	return note.ReplaceUrgentMsg(id, summary, body, urgency)
 }
