@@ -11,68 +11,117 @@ import (
 	"github.com/guelfey/go.dbus"
 )
 
-var connection *dbus.Conn
-
+// NotificationUrgency can be either LowUrgency, NormalUrgency, and CriticalUrgency.
+// It is conceivable that some notification daemons make no distinction between the
+// different urgencies, but enough do that it makes sense to use them.
 type NotificationUrgency byte
 
 const (
-	LowUrgency NotificationUrgency = iota
-	NormalUrgency
-	CriticalUrgency
+	LowUrgency      NotificationUrgency = iota // LowUrgency probably shouldn't even be shown ;-)
+	NormalUrgency                              // NormalUrgency is for information that is interesting.
+	CriticalUrgency                            // CriticalUrgency is for errors or severe events.
 )
 
+// asHint returns the NotificationUrgency in the type that the DBus
+// specification requires.
 func (u NotificationUrgency) asHint() map[string]dbus.Variant {
 	return map[string]dbus.Variant{"urgency": dbus.MakeVariant(byte(u))}
 }
 
+// Notification is there to provide you with full power of your notifications.
+// It is possible for you to use a Notification as you use the notify library
+// without them. This allows for multiple defaults.
+//
+// For example:
+//
+//	func main() {
+//		critical := notify.New("prog", "", "", "critical-icon.png", time.Duration(0), notify.CriticalUrgency)
+//		boring := notify.New("prog", "", "", "low-icon.png", 1 * time.Second, notify.LowUrgency)
+//		boring.SendMsg("Nothing is happening... boring!", "")
+//		critical.SendMsg("Your computer is on fire!", "Here is what you should do:\n ...")
+//	}
+//
 type Notification struct {
-	Name    string
+	// Name represents the application name sending the notification.  This is
+	// optional and can be the empty string "".
+	Name string
+	// Summary represents the subject of the notification.
 	Summary string
-	Body    string
+	// Body represents the main body with extra details. Some notification
+	// daemons ignore the body; it is optional and can be the empty string "".
+	Body string
 
+	// IconPath is a path to an icon that should be used for the notification.
+	// Some notification daemons ignore the icon path; it is optional and can
+	// be the empty string "".
 	IconPath string
-	Timeout  time.Duration
-	Urgency  NotificationUrgency
+	// Timeout is the requested timeout for the notification. Some notification
+	// daemons override the requested timeout. A value of 0 is a request that
+	// it not timeout at all.
+	Timeout time.Duration
+	// Urgency determines the urgency of the notification, which can be one of
+	// LowUrgency, NormalUrgency, and CriticalUrgency.
+	Urgency NotificationUrgency
 }
 
+// New returns a pointer to a new Notification.
 func New(name, summary, body, icon string, timeout time.Duration, urgency NotificationUrgency) *Notification {
 	return &Notification{name, summary, body, icon, timeout, urgency}
 }
 
+// Send sends the notification n as it is, and returns the id and err, possibly
+// nil.
 func (n Notification) Send() (id uint32, err error) {
-	return notify(n.Name, n.Summary, n.Body, n.IconPath, 0, nil, n.Urgency.asHint(), n.TimeoutInMS())
+	return notify(n.Name, n.Summary, n.Body, n.IconPath, 0, nil, n.Urgency.asHint(), n.timeoutInMS())
 }
 
 func (n Notification) SendMsg(summary, body string) (id uint32, err error) {
-	return notify(n.Name, summary, body, n.IconPath, 0, nil, n.Urgency.asHint(), n.TimeoutInMS())
+	return notify(n.Name, summary, body, n.IconPath, 0, nil, n.Urgency.asHint(), n.timeoutInMS())
 }
 
 func (n Notification) SendUrgentMsg(summary, body string, urgency NotificationUrgency) (id uint32, err error) {
-	return notify(n.Name, summary, body, n.IconPath, 0, nil, urgency.asHint(), n.TimeoutInMS())
+	return notify(n.Name, summary, body, n.IconPath, 0, nil, urgency.asHint(), n.timeoutInMS())
 }
 
 func (n Notification) Replace(id uint32) error {
-	_, err := notify(n.Name, n.Summary, n.Body, n.IconPath, id, nil, n.Urgency.asHint(), n.TimeoutInMS())
+	_, err := notify(n.Name, n.Summary, n.Body, n.IconPath, id, nil, n.Urgency.asHint(), n.timeoutInMS())
 	return err
 }
 
 func (n Notification) ReplaceMsg(id uint32, summary, body string) error {
-	_, err := notify(n.Name, summary, body, n.IconPath, id, nil, n.Urgency.asHint(), n.TimeoutInMS())
+	_, err := notify(n.Name, summary, body, n.IconPath, id, nil, n.Urgency.asHint(), n.timeoutInMS())
 	return err
 }
 
 func (n Notification) ReplaceUrgentMsg(id uint32, summary, body string, urgency NotificationUrgency) error {
-	_, err := notify(n.Name, summary, body, n.IconPath, id, nil, urgency.asHint(), n.TimeoutInMS())
+	_, err := notify(n.Name, summary, body, n.IconPath, id, nil, urgency.asHint(), n.timeoutInMS())
 	return err
 }
 
-func (n Notification) TimeoutInMS() int32 {
+// timeoutInMS returns Timeout in milliseconds.
+//
+// The specification specifies that the timeout is the number of milliseconds
+// that the notification should be displayed.
+func (n Notification) timeoutInMS() int32 {
 	return int32(n.Timeout / time.Millisecond)
 }
 
+// notify does the real work of getting a connection and talking to the
+// notification daemon. It doesn't really talk though.
+//
+// To have some elements use their defaults, the following is accepted:
+//
+//	name = ""
+//	body = ""
+//	replacesID = 0
+//	actions = nil
+//	hints = nil
+//
+// So you see, really only summary and timeout are required for a meaningful
+// notification.
 func notify(name, summary, body, icon string, replacesID uint32, actions []string, hints map[string]dbus.Variant, timeout int32) (id uint32, err error) {
 	if connection == nil {
-		connection, err := dbus.SessionBus()
+		connection, err = dbus.SessionBus()
 		if err != nil {
 			return 0, err
 		}
