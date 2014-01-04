@@ -112,34 +112,3 @@ func (n Notification) ReplaceUrgentMsg(id uint32, summary, body string, urgency 
 func (n Notification) timeoutInMS() int32 {
 	return int32(n.Timeout / time.Millisecond)
 }
-
-// notify does the real work of getting a connection and talking to the
-// notification daemon. It doesn't really talk though.
-//
-// To have some elements use their defaults, the following is accepted:
-//
-//	name = ""
-//	body = ""
-//	replacesID = 0
-//	actions = nil
-//	hints = nil
-//
-// So you see, really only summary and timeout are required for a meaningful
-// notification.
-func notify(name, summary, body, icon string, replacesID uint32, actions []string, hints map[string]dbus.Variant, timeout int32) (id uint32, err error) {
-	if connection == nil {
-		connection, err = dbus.SessionBus()
-		if err != nil {
-			return 0, err
-		}
-	}
-
-	obj := connection.Object("org.freedesktop.Notifications", "/org/freedesktop/Notifications")
-	call := obj.Call("org.freedesktop.Notifications.Notify", 0, name, replacesID, icon, summary, body, actions, hints, timeout)
-	if call.Err != nil {
-		return 0, call.Err
-	} else if call.Store(&id) != nil {
-		return 0, errors.New("unrecognized response from notify daemon")
-	}
-	return
-}
