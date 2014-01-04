@@ -11,6 +11,8 @@ import (
 	"github.com/guelfey/go.dbus"
 )
 
+var connection *dbus.Conn
+
 type NotificationUrgency byte
 
 const (
@@ -69,13 +71,14 @@ func (n Notification) TimeoutInMS() int32 {
 }
 
 func notify(name, summary, body, icon string, replacesID uint32, actions []string, hints map[string]dbus.Variant, timeout int32) (id uint32, err error) {
-	conn, err := dbus.SessionBus()
-	if err != nil {
-		return 0, err
+	if connection == nil {
+		connection, err := dbus.SessionBus()
+		if err != nil {
+			return 0, err
+		}
 	}
-	// defer conn.Close()
 
-	obj := conn.Object("org.freedesktop.Notifications", "/org/freedesktop/Notifications")
+	obj := connection.Object("org.freedesktop.Notifications", "/org/freedesktop/Notifications")
 	call := obj.Call("org.freedesktop.Notifications.Notify", 0, name, replacesID, icon, summary, body, actions, hints, timeout)
 	if call.Err != nil {
 		return 0, call.Err
