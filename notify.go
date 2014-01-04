@@ -2,7 +2,7 @@
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 
-// Package notify provides DBus notifications.
+// Package notify provides tray notifications via D-Bus freedesktop.org notifications.
 //
 // WARNING: You are free to use this package, however please note that the API is
 // likely to be unstable till all the functionality is implemented, and there is
