@@ -20,7 +20,7 @@ const (
 )
 
 func (u NotificationUrgency) asHint() map[string]dbus.Variant {
-	return map[string]dbus.Variant{"hint": dbus.MakeVariant(byte(u))}
+	return map[string]dbus.Variant{"urgency": dbus.MakeVariant(byte(u))}
 }
 
 type Notification struct {
@@ -73,7 +73,7 @@ func notify(name, summary, body, icon string, replacesID uint32, actions []strin
 	if err != nil {
 		return 0, err
 	}
-	defer conn.Close()
+	// defer conn.Close()
 
 	obj := conn.Object("org.freedesktop.Notifications", "/org/freedesktop/Notifications")
 	call := obj.Call("org.freedesktop.Notifications.Notify", 0, name, replacesID, icon, summary, body, actions, hints, timeout)

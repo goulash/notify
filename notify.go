@@ -11,7 +11,10 @@ import (
 
 // note acts as the default notification, which allows you to set default
 // parameters and then send messages without creating any Notifications.
-var note Notification
+var note = Notification{
+	Timeout: 3 * time.Second,
+	Urgency: NormalUrgency,
+}
 
 func Init(name, icon string, timeout time.Duration, urgency NotificationUrgency) {
 	note.Name = name
