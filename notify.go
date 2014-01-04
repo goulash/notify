@@ -114,9 +114,9 @@ func ReplaceMsg(id uint32, summary, body string) error {
 	return note.ReplaceMsg(id, summary, body)
 }
 
-// ReplaceMsg replaces the already existing notification with the ID id with
-// summary and body and urgency, returning an error if it fails. It takes all
-// other values from the implicit notification object.
+// ReplaceUrgentMsg replaces the already existing notification with the ID id
+// with summary and body and urgency, returning an error if it fails. It takes
+// all other values from the implicit notification object.
 func ReplaceUrgentMsg(id uint32, summary, body string, urgency NotificationUrgency) error {
 	return note.ReplaceUrgentMsg(id, summary, body, urgency)
 }

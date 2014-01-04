@@ -75,24 +75,29 @@ func (n Notification) Send() (id uint32, err error) {
 	return notify(n.Name, n.Summary, n.Body, n.IconPath, 0, nil, n.Urgency.asHint(), n.timeoutInMS())
 }
 
+// SendMsg is identical to notify.SendMsg, except that the rest of the values come from n.
 func (n Notification) SendMsg(summary, body string) (id uint32, err error) {
 	return notify(n.Name, summary, body, n.IconPath, 0, nil, n.Urgency.asHint(), n.timeoutInMS())
 }
 
+// SendUrgentMsg is identical to notify.SendUrgentMsg, except that the rest of the values come from n.
 func (n Notification) SendUrgentMsg(summary, body string, urgency NotificationUrgency) (id uint32, err error) {
 	return notify(n.Name, summary, body, n.IconPath, 0, nil, urgency.asHint(), n.timeoutInMS())
 }
 
+// Replace replaces the notification with the ID id as it is, and returns an error if one occured.
 func (n Notification) Replace(id uint32) error {
 	_, err := notify(n.Name, n.Summary, n.Body, n.IconPath, id, nil, n.Urgency.asHint(), n.timeoutInMS())
 	return err
 }
 
+// ReplaceMsg is identical to notify.ReplaceMsg, except that the rest of the values come from n.
 func (n Notification) ReplaceMsg(id uint32, summary, body string) error {
 	_, err := notify(n.Name, summary, body, n.IconPath, id, nil, n.Urgency.asHint(), n.timeoutInMS())
 	return err
 }
 
+// ReplaceUrgentMsg is identical to notify.ReplaceUrgentMsg, except that the rest of the values come from n.
 func (n Notification) ReplaceUrgentMsg(id uint32, summary, body string, urgency NotificationUrgency) error {
 	_, err := notify(n.Name, summary, body, n.IconPath, id, nil, urgency.asHint(), n.timeoutInMS())
 	return err
