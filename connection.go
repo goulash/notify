@@ -5,6 +5,8 @@
 package notify
 
 import (
+	"errors"
+
 	"github.com/guelfey/go.dbus"
 )
 
