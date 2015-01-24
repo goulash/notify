@@ -7,7 +7,7 @@ package notify
 import (
 	"time"
 
-	"github.com/guelfey/go.dbus"
+	"github.com/godbus/dbus"
 )
 
 // NotificationUrgency can be either LowUrgency, NormalUrgency, and CriticalUrgency.

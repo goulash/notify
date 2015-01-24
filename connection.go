@@ -7,7 +7,7 @@ package notify
 import (
 	"errors"
 
-	"github.com/guelfey/go.dbus"
+	"github.com/godbus/dbus"
 )
 
 // connection is a global D-Bus connection. TODO: I do not know if this
