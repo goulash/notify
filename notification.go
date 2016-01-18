@@ -61,7 +61,32 @@ type Notification struct {
 	// Urgency determines the urgency of the notification, which can be one of
 	// LowUrgency, NormalUrgency, and CriticalUrgency.
 	Urgency NotificationUrgency
+
+	// id
+	id int32
 }
+
+// ---------------
+
+func main() {
+	n := Notification{
+		Name:    "bla",
+		Timeout: 3 * time.Second,
+		Urgency: NormalUrgency,
+	}
+	n2 := n.Clone()
+	n2 := n.SendNew(summary, body)
+	id := n.ID()
+	n.Send()
+	n.Replace()
+	n.SendMsg()
+	n.ReplaceMsg()
+	n.SendUrgentMsg()
+	n.ReplaceUrgentMsg()
+
+}
+
+// ----------------
 
 // New returns a pointer to a new Notification.
 func New(name, summary, body, icon string, timeout time.Duration, urgency NotificationUrgency) *Notification {
