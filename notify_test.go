@@ -2,11 +2,12 @@
 // Use of this source code is governed by an MIT license
 // that can be found in the LICENSE file.
 
-package notify
+package notify_test
 
 import (
-	"github.com/goulash/notify"
 	"time"
+
+	"github.com/goulash/notify"
 )
 
 // This is a simple example for how to use the notify package.
@@ -15,7 +16,7 @@ func Example() {
 
 	notify.SendMsg("Starting up the Simple Server", "")
 	time.Sleep(3 * time.Second)
-	id, _ = notify.SendUrgentMsg("Oops, made a big mistake!", "", notify.CriticalUrgency)
+	id, _ := notify.SendUrgentMsg("Oops, made a big mistake!", "", notify.CriticalUrgency)
 	time.Sleep(1 * time.Second)
 	notify.ReplaceMsg(id, "Ha! Fixed that, thank goodness!", "")
 }
